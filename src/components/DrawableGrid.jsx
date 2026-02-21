@@ -3,7 +3,7 @@ import { RETINA_SIZE } from "../perceptron";
 
 const CELL_SIZE = 18;
 const GAP = 1;
-const GRID_PX = RETINA_SIZE * (CELL_SIZE + GAP) + 5 * GAP;
+const GRID_PX = RETINA_SIZE * (CELL_SIZE + GAP) + 7 * GAP;
 
 export default function DrawableGrid({
   retina,

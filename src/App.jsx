@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from "react";
 import {
   NUM_PIXELS,
   createAssociationLayer,
@@ -9,20 +9,20 @@ import {
   predict,
   learn,
   computeReceptiveFields,
-} from './perceptron';
-import RetinaInput from './components/RetinaInput';
-import NetworkViz from './components/NetworkViz';
-import OutputPanel from './components/OutputPanel';
-import WeightViz from './components/WeightViz';
-import ControlPanel from './components/ControlPanel';
-import ReceptiveFieldViz from './components/ReceptiveFieldViz';
+} from "./perceptron";
+import RetinaInput from "./components/RetinaInput";
+import NetworkViz from "./components/NetworkViz";
+import OutputPanel from "./components/OutputPanel";
+import WeightViz from "./components/WeightViz";
+import ControlPanel from "./components/ControlPanel";
+import ReceptiveFieldViz from "./components/ReceptiveFieldViz";
 
 function App() {
   const [associationUnits] = useState(() => createAssociationLayer());
   const [retina, setRetina] = useState(() => new Array(NUM_PIXELS).fill(0));
   const [weights, setWeights] = useState(() => createOutputWeights());
   const [biases, setBiases] = useState(() => createOutputBiases());
-  const [labels, setLabels] = useState(['Class A', 'Class B']);
+  const [labels, setLabels] = useState(["Class A", "Class B"]);
   const [learningRate, setLearningRate] = useState(0.1);
   const [stepCount, setStepCount] = useState(0);
 
@@ -30,29 +30,35 @@ function App() {
 
   const associationActivations = useMemo(
     () => computeAssociationActivations(retina, associationUnits),
-    [retina, associationUnits]
+    [retina, associationUnits],
   );
 
   const scores = useMemo(
     () => computeOutputScores(associationActivations, weights, biases),
-    [associationActivations, weights, biases]
+    [associationActivations, weights, biases],
   );
 
   const prediction = useMemo(() => predict(scores), [scores]);
 
   const receptiveFields = useMemo(
     () => computeReceptiveFields(weights, associationUnits),
-    [weights, associationUnits]
+    [weights, associationUnits],
   );
 
   const handleLearn = useCallback(
     (correctLabel) => {
-      const result = learn(weights, biases, associationActivations, correctLabel, learningRate);
+      const result = learn(
+        weights,
+        biases,
+        associationActivations,
+        correctLabel,
+        learningRate,
+      );
       setWeights(result.weights);
       setBiases(result.biases);
       setStepCount((c) => c + 1);
     },
-    [weights, biases, associationActivations, learningRate]
+    [weights, biases, associationActivations, learningRate],
   );
 
   const handleReset = useCallback(() => {
@@ -70,15 +76,16 @@ function App() {
             <h1 className="text-4xl font-bold tracking-tight">
               Perceptron Mark I
             </h1>
-            <p className="mono text-sm mt-1" style={{ color: '#8a8275' }}>
-              Interactive simulator — {stepCount} training step{stepCount !== 1 ? 's' : ''}
+            <p className="mono text-sm mt-1" style={{ color: "#8a8275" }}>
+              Interactive simulator — {stepCount} training step
+              {stepCount !== 1 ? "s" : ""}
             </p>
           </div>
           <div
             className="mono text-xs px-4 py-2 rounded-full border-2 border-current"
-            style={{ color: '#8a8275' }}
+            style={{ color: "#8a8275" }}
           >
-            Rosenblatt, 1958
+            Frank Rosenblatt, 1958
           </div>
         </div>
 
@@ -133,7 +140,10 @@ function App() {
 
         {/* Receptive fields */}
         <div className="card card-neutral mt-6">
-          <ReceptiveFieldViz receptiveFields={receptiveFields} labels={labels} />
+          <ReceptiveFieldViz
+            receptiveFields={receptiveFields}
+            labels={labels}
+          />
         </div>
       </div>
     </div>

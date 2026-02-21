@@ -8,24 +8,9 @@ export default function ControlPanel({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="card-label" style={{ marginBottom: 0 }}>Controls</div>
-
-      {/* Learning rate */}
-      <label className="flex flex-col gap-2">
-        <div className="flex items-baseline justify-between">
-          <span className="text-sm font-semibold">Learning rate</span>
-          <span className="mono text-sm font-bold">{learningRate.toFixed(2)}</span>
-        </div>
-        <input
-          type="range"
-          min={0.01}
-          max={1.0}
-          step={0.01}
-          value={learningRate}
-          onChange={(e) => onLearningRateChange(Number(e.target.value))}
-          className="w-full accent-[#1a1a1a]"
-        />
-      </label>
+      <div className="card-label" style={{ marginBottom: 0 }}>
+        Controls
+      </div>
 
       {/* Learn buttons */}
       <div className="flex flex-col gap-2">
@@ -38,8 +23,8 @@ export default function ControlPanel({
               disabled={!hasInput}
               className={`flex-1 py-3 px-3 rounded-full text-sm font-bold transition-all cursor-pointer border-3 ${
                 hasInput
-                  ? 'border-[#1a1a1a] bg-[#1a1a1a] text-white hover:bg-[#333] active:scale-95'
-                  : 'border-[#c0b8a8] bg-transparent text-[#c0b8a8] cursor-not-allowed'
+                  ? "border-[#1a1a1a] bg-[#1a1a1a] text-white hover:bg-[#333] active:scale-95"
+                  : "border-[#c0b8a8] bg-transparent text-[#c0b8a8] cursor-not-allowed"
               }`}
               style={{ borderWidth: 3 }}
             >
@@ -48,9 +33,30 @@ export default function ControlPanel({
           ))}
         </div>
         {!hasInput && (
-          <span className="mono text-[10px]" style={{ opacity: 0.4 }}>Draw an input first</span>
+          <span className="mono text-[10px]" style={{ opacity: 0.4 }}>
+            Draw an input first
+          </span>
         )}
       </div>
+
+      {/* Learning rate */}
+      <label className="flex flex-col gap-2">
+        <div className="flex items-baseline justify-between">
+          <span className="text-sm font-semibold">Learning rate</span>
+          <span className="mono text-sm font-bold">
+            {learningRate.toFixed(2)}
+          </span>
+        </div>
+        <input
+          type="range"
+          min={0.01}
+          max={1.0}
+          step={0.01}
+          value={learningRate}
+          onChange={(e) => onLearningRateChange(Number(e.target.value))}
+          className="w-full accent-[#1a1a1a]"
+        />
+      </label>
 
       {/* Reset */}
       <button

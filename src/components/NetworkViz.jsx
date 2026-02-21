@@ -1,5 +1,5 @@
-import { useMemo, useRef, useEffect, useState } from 'react';
-import { RETINA_SIZE, NUM_ASSOCIATION } from '../perceptron';
+import { useMemo, useRef, useEffect, useState } from "react";
+import { RETINA_SIZE, NUM_ASSOCIATION } from "../perceptron";
 
 // Layout constants
 const LAYER_GAP = 80;
@@ -16,15 +16,15 @@ const BORDER = 3;
 const MAX_RETINA_ASSOC_LINES = NUM_ASSOCIATION;
 const MAX_ASSOC_OUTPUT_LINES = NUM_ASSOCIATION;
 
-const INACTIVE_COLOR = '#8a8078';
-const INACTIVE_DOT = '#b0a898';
-const DARK = '#1a1a1a';
+const INACTIVE_COLOR = "#8a8078";
+const INACTIVE_DOT = "#b0a898";
+const DARK = "#1a1a1a";
 
 // Layer panel colors
-const RETINA_BG = '#bdd7f5';
-const ASSOC_BG = '#c8e6c0';
-const WEIGHT_BG = '#f5e6a3';
-const OUTPUT_BG = '#f5c4b8';
+const RETINA_BG = "#bdd7f5";
+const ASSOC_BG = "#c8e6c0";
+const WEIGHT_BG = "#f5e6a3";
+const OUTPUT_BG = "#f5c4b8";
 
 function weightToSvgColor(w) {
   if (w > 0) {
@@ -36,18 +36,24 @@ function weightToSvgColor(w) {
     const r = Math.round(100 + 155 * intensity);
     return `rgb(${r}, 60, 60)`;
   }
-  return '#c8c0b4';
+  return "#c8c0b4";
 }
 
 function RetinaLayer({ retina, x, y }) {
   const cellSize = RETINA_VIZ_SIZE / RETINA_SIZE;
-  const clipId = 'retina-clip';
+  const clipId = "retina-clip";
   const inset = BORDER / 2;
   return (
     <g transform={`translate(${x}, ${y})`}>
       <defs>
         <clipPath id={clipId}>
-          <rect x={inset} y={inset} width={RETINA_VIZ_SIZE - BORDER} height={RETINA_VIZ_SIZE - BORDER} rx={16} />
+          <rect
+            x={inset}
+            y={inset}
+            width={RETINA_VIZ_SIZE - BORDER}
+            height={RETINA_VIZ_SIZE - BORDER}
+            rx={16}
+          />
         </clipPath>
       </defs>
       <rect
@@ -69,7 +75,7 @@ function RetinaLayer({ retina, x, y }) {
               y={row * cellSize + 0.5}
               width={cellSize - 1}
               height={cellSize - 1}
-              fill={val ? DARK : '#e8e3db'}
+              fill={val ? DARK : "#e8e3db"}
               rx={1}
             />
           );
@@ -95,7 +101,7 @@ function AssociationLayerViz({ activations, x, y }) {
   const rows = Math.ceil(NUM_ASSOCIATION / cols);
   const dotSize = Math.min(
     (ASSOC_VIZ_W - 16) / cols,
-    (ASSOC_VIZ_H - 16) / rows
+    (ASSOC_VIZ_H - 16) / rows,
   );
   const padX = (ASSOC_VIZ_W - cols * dotSize) / 2;
   const padY = (ASSOC_VIZ_H - rows * dotSize) / 2;
@@ -113,8 +119,8 @@ function AssociationLayerViz({ activations, x, y }) {
             cx={padX + col * dotSize + dotSize / 2}
             cy={padY + row * dotSize + dotSize / 2}
             r={dotSize * 0.35}
-            fill={active ? '#3b82f6' : INACTIVE_DOT}
-            stroke={active ? DARK : 'none'}
+            fill={active ? "#3b82f6" : INACTIVE_DOT}
+            stroke={active ? DARK : "none"}
             strokeWidth={active ? 0.5 : 0}
           />
         );
@@ -150,7 +156,7 @@ function WeightLayerViz({ weights, labels, x, y }) {
   const rows = Math.ceil(NUM_ASSOCIATION / cols);
   const cellSize = Math.min(
     (WEIGHT_VIZ_W - 8) / cols,
-    ((WEIGHT_VIZ_H - 40) / 2) / rows
+    (WEIGHT_VIZ_H - 40) / 2 / rows,
   );
   const gridH = rows * cellSize;
   const totalH = gridH * 2 + 24;
@@ -174,21 +180,22 @@ function WeightLayerViz({ weights, labels, x, y }) {
             >
               {labels[oIdx]}
             </text>
-            {weights && Array.from({ length: NUM_ASSOCIATION }, (_, i) => {
-              const row = Math.floor(i / cols);
-              const col = i % cols;
-              return (
-                <rect
-                  key={i}
-                  x={padX + col * cellSize}
-                  y={row * cellSize}
-                  width={cellSize - 0.5}
-                  height={cellSize - 0.5}
-                  fill={weightToSvgColor(weights[oIdx][i])}
-                  rx={0.5}
-                />
-              );
-            })}
+            {weights &&
+              Array.from({ length: NUM_ASSOCIATION }, (_, i) => {
+                const row = Math.floor(i / cols);
+                const col = i % cols;
+                return (
+                  <rect
+                    key={i}
+                    x={padX + col * cellSize}
+                    y={row * cellSize}
+                    width={cellSize - 0.5}
+                    height={cellSize - 0.5}
+                    fill={weightToSvgColor(weights[oIdx][i])}
+                    rx={0.5}
+                  />
+                );
+              })}
           </g>
         );
       })}
@@ -227,14 +234,17 @@ function OutputLayerViz({ scores, labels, prediction, x, y }) {
       {[0, 1].map((idx) => {
         const isWinner = prediction === idx;
         return (
-          <g key={idx} transform={`translate(0, ${startY + idx * (unitH + gap)})`}>
+          <g
+            key={idx}
+            transform={`translate(0, ${startY + idx * (unitH + gap)})`}
+          >
             <rect
               x={10}
               y={0}
               width={unitW - 20}
               height={unitH}
               rx={unitH / 2}
-              fill={isWinner ? DARK : 'rgba(255,255,255,0.6)'}
+              fill={isWinner ? DARK : "rgba(255,255,255,0.6)"}
               stroke={DARK}
               strokeWidth={2.5}
             />
@@ -242,10 +252,10 @@ function OutputLayerViz({ scores, labels, prediction, x, y }) {
               x={unitW / 2}
               y={26}
               textAnchor="middle"
-              fontFamily="'Space Grotesk', sans-serif"
+              fontFamily="'Helvetica Neue', Helvetica, sans-serif"
               fontSize={11}
               fontWeight={700}
-              fill={isWinner ? '#fff' : DARK}
+              fill={isWinner ? "#fff" : DARK}
             >
               {labels[idx]}
             </text>
@@ -256,9 +266,9 @@ function OutputLayerViz({ scores, labels, prediction, x, y }) {
               fontFamily="'Space Mono', monospace"
               fontSize={13}
               fontWeight={700}
-              fill={isWinner ? '#fff' : DARK}
+              fill={isWinner ? "#fff" : DARK}
             >
-              {scores ? scores[idx].toFixed(2) : '—'}
+              {scores ? scores[idx].toFixed(2) : "—"}
             </text>
             {isWinner && (
               <text
@@ -314,7 +324,10 @@ const STABLE_ASSOC_OUTPUT_INDICES = (() => {
 function getAssocDotLayout() {
   const cols = 8;
   const rows = Math.ceil(NUM_ASSOCIATION / cols);
-  const dotSize = Math.min((ASSOC_VIZ_W - 16) / cols, (ASSOC_VIZ_H - 16) / rows);
+  const dotSize = Math.min(
+    (ASSOC_VIZ_W - 16) / cols,
+    (ASSOC_VIZ_H - 16) / rows,
+  );
   const padX = (ASSOC_VIZ_W - cols * dotSize) / 2;
   const padY = (ASSOC_VIZ_H - rows * dotSize) / 2;
   return { cols, dotSize, padX, padY };
@@ -338,7 +351,8 @@ function ConnectionCanvas({
   const geometry = useMemo(() => {
     const { cols, dotSize, padX, padY } = getAssocDotLayout();
     const cellSize = RETINA_VIZ_SIZE / RETINA_SIZE;
-    const unitH = 70, gap = 20;
+    const unitH = 70,
+      gap = 20;
     const totalH = unitH * 2 + gap;
     const startY = (OUTPUT_VIZ_H - totalH) / 2;
 
@@ -346,10 +360,11 @@ function ConnectionCanvas({
       const unit = associationUnits[aIdx];
       const pixelIdx = unit.connections[0];
       const pixelRow = Math.floor(pixelIdx / RETINA_SIZE);
+      const pixelCol = pixelIdx % RETINA_SIZE;
       const aRow = Math.floor(aIdx / cols);
       const aCol = aIdx % cols;
       return {
-        x1: retinaPos.x + RETINA_VIZ_SIZE,
+        x1: retinaPos.x + pixelCol * cellSize + cellSize / 2,
         y1: retinaPos.y + pixelRow * cellSize + cellSize / 2,
         x2: assocPos.x + padX + aCol * dotSize + dotSize / 2,
         y2: assocPos.y + padY + aRow * dotSize + dotSize / 2,
@@ -358,19 +373,42 @@ function ConnectionCanvas({
       };
     });
 
+    // Compute weight grid layout to connect lines to actual cells
+    const wCols = 16;
+    const wRows = Math.ceil(NUM_ASSOCIATION / wCols);
+    const wCellSize = Math.min(
+      (WEIGHT_VIZ_W - 8) / wCols,
+      (WEIGHT_VIZ_H - 40) / 2 / wRows,
+    );
+    const wPadX = (WEIGHT_VIZ_W - wCols * wCellSize) / 2;
+    const wGridH = wRows * wCellSize;
+    const wTotalH = wGridH * 2 + 24;
+    const wStartY = (WEIGHT_VIZ_H - wTotalH) / 2;
+
     const aoLines = [];
     for (const aIdx of STABLE_ASSOC_OUTPUT_INDICES) {
       const aRow = Math.floor(aIdx / cols);
       const aCol = aIdx % cols;
       const x1 = assocPos.x + padX + aCol * dotSize + dotSize / 2;
       const y1 = assocPos.y + padY + aRow * dotSize + dotSize / 2;
-      const xMid = weightPos.x + WEIGHT_VIZ_W / 2;
+
+      const wRow = Math.floor(aIdx / wCols);
+      const wCol = aIdx % wCols;
+
       for (let oIdx = 0; oIdx < 2; oIdx++) {
+        const wGridY = weightPos.y + wStartY + oIdx * (wGridH + 24);
+        const wCellCenterY = wGridY + wRow * wCellSize + wCellSize / 2;
+        const wCellLeft = weightPos.x + wPadX + wCol * wCellSize;
+        const wCellRight = wCellLeft + wCellSize;
+
         aoLines.push({
-          x1, y1,
+          x1,
+          y1,
           x2: outputPos.x,
           y2: outputPos.y + startY + oIdx * (unitH + gap) + unitH / 2,
-          xMid,
+          wLeft: wCellLeft,
+          wRight: wCellRight,
+          wY: wCellCenterY,
           aIdx,
           oIdx,
         });
@@ -387,68 +425,84 @@ function ConnectionCanvas({
     const dpr = window.devicePixelRatio || 1;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
     const { raLines, aoLines } = geometry;
 
+    // Helper: draw a cable-like bezier curve between two points
+    // controlBias: 0-1, how far the control points pull horizontally
+    function drawCable(ctx, x1, y1, x2, y2, bias) {
+      const dx = (x2 - x1) * bias;
+      ctx.moveTo(x1, y1);
+      ctx.bezierCurveTo(x1 + dx, y1, x2 - dx, y2, x2, y2);
+    }
+
     // Draw inactive retina→assoc lines first (batch)
-    ctx.lineWidth = 0.3;
-    ctx.strokeStyle = '#c8c0b4';
-    ctx.globalAlpha = 0.15;
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = "#ffffff";
+    ctx.globalAlpha = 0.9;
     ctx.beginPath();
     for (const l of raLines) {
-      const active = activations && activations[l.aIdx] > 0 && retina[l.pixelIdx] > 0;
-      if (!active) {
-        ctx.moveTo(l.x1, l.y1);
-        ctx.lineTo(l.x2, l.y2);
-      }
+      const active = activations && activations[l.aIdx] > 0;
+      if (!active) drawCable(ctx, l.x1, l.y1, l.x2, l.y2, 0.5);
     }
     ctx.stroke();
 
     // Draw active retina→assoc lines
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 1.0;
     ctx.strokeStyle = DARK;
     ctx.globalAlpha = 0.7;
     ctx.beginPath();
     for (const l of raLines) {
-      const active = activations && activations[l.aIdx] > 0 && retina[l.pixelIdx] > 0;
-      if (active) {
-        ctx.moveTo(l.x1, l.y1);
-        ctx.lineTo(l.x2, l.y2);
-      }
+      const active = activations && activations[l.aIdx] > 0;
+      if (active) drawCable(ctx, l.x1, l.y1, l.x2, l.y2, 0.5);
     }
     ctx.stroke();
 
-    // Draw inactive assoc→output lines (batch) — very faint
-    ctx.lineWidth = 0.3;
-    ctx.strokeStyle = '#c8c0b4';
-    ctx.globalAlpha = 0.12;
+    // Draw inactive assoc→weight lines (batch)
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = "#ffffff";
+    ctx.globalAlpha = 0.8;
     ctx.beginPath();
     for (const l of aoLines) {
       const active = activations && activations[l.aIdx] > 0;
-      if (!active) {
-        ctx.moveTo(l.x1, l.y1);
-        ctx.lineTo(l.xMid, l.y1);
-        ctx.lineTo(l.x2, l.y2);
-      }
+      if (!active) drawCable(ctx, l.x1, l.y1, l.wLeft, l.wY, 0.5);
     }
     ctx.stroke();
 
-    // Draw active assoc→output lines — bold and saturated
+    // Draw inactive weight→output lines (batch)
+    ctx.beginPath();
+    for (const l of aoLines) {
+      const active = activations && activations[l.aIdx] > 0;
+      if (!active) drawCable(ctx, l.wRight, l.wY, l.x2, l.y2, 0.5);
+    }
+    ctx.stroke();
+
+    // Draw active assoc→weight lines (neutral, like retina→assoc)
+    ctx.lineWidth = 1.0;
+    ctx.strokeStyle = DARK;
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    for (const l of aoLines) {
+      const active = activations && activations[l.aIdx] > 0;
+      if (!active) continue;
+      drawCable(ctx, l.x1, l.y1, l.wLeft, l.wY, 0.5);
+    }
+    ctx.stroke();
+
+    // Draw active weight→output lines (colored by weight)
     for (const l of aoLines) {
       const active = activations && activations[l.aIdx] > 0;
       if (!active) continue;
       const w = weights ? weights[l.oIdx][l.aIdx] : 0;
       const absW = Math.abs(w);
-      ctx.strokeStyle = w > 0 ? '#16a34a' : w < 0 ? '#dc2626' : '#c8c0b4';
+      ctx.strokeStyle = w > 0 ? "#16a34a" : w < 0 ? "#dc2626" : "#c8c0b4";
       ctx.lineWidth = Math.max(0.8, absW * 4);
       ctx.globalAlpha = Math.min(0.9, 0.3 + absW * 3);
       ctx.beginPath();
-      ctx.moveTo(l.x1, l.y1);
-      ctx.lineTo(l.xMid, l.y1);
-      ctx.lineTo(l.x2, l.y2);
+      drawCable(ctx, l.wRight, l.wY, l.x2, l.y2, 0.5);
       ctx.stroke();
     }
 
@@ -458,80 +512,107 @@ function ConnectionCanvas({
   return (
     <canvas
       ref={canvasRef}
-      style={{ position: 'absolute', top: 0, left: 0, width, height, pointerEvents: 'none' }}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width,
+        height,
+        pointerEvents: "none",
+      }}
     />
   );
 }
 
-export default function NetworkViz({ retina, associationUnits, activations, weights, scores, labels, prediction }) {
+export default function NetworkViz({
+  retina,
+  associationUnits,
+  activations,
+  weights,
+  scores,
+  labels,
+  prediction,
+}) {
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(900);
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => setContainerWidth(entries[0].contentRect.width));
+    const observer = new ResizeObserver((entries) =>
+      setContainerWidth(entries[0].contentRect.width),
+    );
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
   const positions = useMemo(() => {
-    const totalContentW = RETINA_VIZ_SIZE + ASSOC_VIZ_W + WEIGHT_VIZ_W + OUTPUT_VIZ_W + LAYER_GAP * 3;
+    const totalContentW =
+      RETINA_VIZ_SIZE +
+      ASSOC_VIZ_W +
+      WEIGHT_VIZ_W +
+      OUTPUT_VIZ_W +
+      LAYER_GAP * 3;
     const startX = Math.max(20, (containerWidth - totalContentW) / 2);
     return {
       retina: { x: startX, y: TOP_PAD + (ASSOC_VIZ_H - RETINA_VIZ_SIZE) / 2 },
       assoc: { x: startX + RETINA_VIZ_SIZE + LAYER_GAP, y: TOP_PAD },
-      weight: { x: startX + RETINA_VIZ_SIZE + ASSOC_VIZ_W + LAYER_GAP * 2, y: TOP_PAD },
-      output: { x: startX + RETINA_VIZ_SIZE + ASSOC_VIZ_W + WEIGHT_VIZ_W + LAYER_GAP * 3, y: TOP_PAD + (ASSOC_VIZ_H - OUTPUT_VIZ_H) / 2 },
+      weight: {
+        x: startX + RETINA_VIZ_SIZE + ASSOC_VIZ_W + LAYER_GAP * 2,
+        y: TOP_PAD,
+      },
+      output: {
+        x:
+          startX + RETINA_VIZ_SIZE + ASSOC_VIZ_W + WEIGHT_VIZ_W + LAYER_GAP * 3,
+        y: TOP_PAD + (ASSOC_VIZ_H - OUTPUT_VIZ_H) / 2,
+      },
     };
   }, [containerWidth]);
 
   const svgH = TOP_PAD + ASSOC_VIZ_H + 44;
 
   return (
-    <div ref={containerRef} className="w-full" style={{ position: 'relative' }}>
+    <div ref={containerRef} className="w-full" style={{ position: "relative" }}>
       <ConnectionCanvas
-        retina={retina} associationUnits={associationUnits} activations={activations} weights={weights}
-        retinaPos={positions.retina} assocPos={positions.assoc} weightPos={positions.weight} outputPos={positions.output}
-        width={containerWidth} height={svgH}
+        retina={retina}
+        associationUnits={associationUnits}
+        activations={activations}
+        weights={weights}
+        retinaPos={positions.retina}
+        assocPos={positions.assoc}
+        weightPos={positions.weight}
+        outputPos={positions.output}
+        width={containerWidth}
+        height={svgH}
       />
-      <svg width="100%" height={svgH} viewBox={`0 0 ${containerWidth} ${svgH}`} style={{ position: 'relative' }}>
-        <RetinaLayer retina={retina} x={positions.retina.x} y={positions.retina.y} />
-        <AssociationLayerViz activations={activations} x={positions.assoc.x} y={positions.assoc.y} />
-        <WeightLayerViz weights={weights} labels={labels} x={positions.weight.x} y={positions.weight.y} />
-        <OutputLayerViz scores={scores} labels={labels} prediction={prediction} x={positions.output.x} y={positions.output.y} />
-
-        {/* Arrows and labels */}
-        <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-            <path d="M0,0 L10,3.5 L0,7" fill={DARK} />
-          </marker>
-        </defs>
-        <line
-          x1={positions.retina.x + RETINA_VIZ_SIZE + 12} y1={TOP_PAD + ASSOC_VIZ_H + 14}
-          x2={positions.assoc.x - 12} y2={TOP_PAD + ASSOC_VIZ_H + 14}
-          stroke={DARK} strokeWidth={2} markerEnd="url(#arrowhead)"
+      <svg
+        width="100%"
+        height={svgH}
+        viewBox={`0 0 ${containerWidth} ${svgH}`}
+        style={{ position: "relative" }}
+      >
+        <RetinaLayer
+          retina={retina}
+          x={positions.retina.x}
+          y={positions.retina.y}
         />
-        <text
-          x={(positions.retina.x + RETINA_VIZ_SIZE + positions.assoc.x) / 2}
-          y={TOP_PAD + ASSOC_VIZ_H + 32}
-          textAnchor="middle"
-          fontFamily="'Space Mono', monospace" fontSize={9} fill={DARK} opacity={0.4}
-        >
-          Fixed random
-        </text>
-        <line
-          x1={positions.assoc.x + ASSOC_VIZ_W + 12} y1={TOP_PAD + ASSOC_VIZ_H + 14}
-          x2={positions.output.x - 12} y2={TOP_PAD + ASSOC_VIZ_H + 14}
-          stroke={DARK} strokeWidth={2} markerEnd="url(#arrowhead)"
+        <AssociationLayerViz
+          activations={activations}
+          x={positions.assoc.x}
+          y={positions.assoc.y}
         />
-        <text
-          x={(positions.assoc.x + ASSOC_VIZ_W + positions.output.x + OUTPUT_VIZ_W) / 2}
-          y={TOP_PAD + ASSOC_VIZ_H + 32}
-          textAnchor="middle"
-          fontFamily="'Space Mono', monospace" fontSize={9} fill={DARK} opacity={0.4}
-        >
-          Trainable weights
-        </text>
+        <WeightLayerViz
+          weights={weights}
+          labels={labels}
+          x={positions.weight.x}
+          y={positions.weight.y}
+        />
+        <OutputLayerViz
+          scores={scores}
+          labels={labels}
+          prediction={prediction}
+          x={positions.output.x}
+          y={positions.output.y}
+        />
       </svg>
     </div>
   );

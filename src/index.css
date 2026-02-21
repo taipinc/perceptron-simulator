@@ -1,51 +1,52 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 body {
-  margin: 0;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  background-color: #f0ebe3;
-  color: #1a1a1a;
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #f0ebe3;
+    color: #1a1a1a;
 }
 
-code, .mono {
-  font-family: 'Space Mono', monospace;
+code,
+.mono {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Card system */
 .card {
-  border: 3px solid #1a1a1a;
-  border-radius: 24px;
-  padding: 24px;
-  position: relative;
+    border: 3px solid #1a1a1a;
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
 }
 
 .card-green {
-  background-color: #c8e6c0;
+    background-color: #c8e6c0;
 }
 
 .card-blue {
-  background-color: #bdd7f5;
+    background-color: #bdd7f5;
 }
 
 .card-yellow {
-  background-color: #f5e6a3;
+    background-color: #f5e6a3;
 }
 
 .card-red {
-  background-color: #f5c4b8;
+    background-color: #f5c4b8;
 }
 
 .card-neutral {
-  background-color: #ffffff;
+    background-color: #ffffff;
 }
 
 .card-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #1a1a1a;
-  opacity: 0.5;
-  margin-bottom: 12px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #1a1a1a;
+    opacity: 0.5;
+    margin-bottom: 12px;
 }
