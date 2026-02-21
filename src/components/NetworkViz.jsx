@@ -394,9 +394,9 @@ function ConnectionCanvas({
     const { raLines, aoLines } = geometry;
 
     // Draw inactive retina→assoc lines first (batch)
-    ctx.lineWidth = 0.5;
-    ctx.strokeStyle = INACTIVE_COLOR;
-    ctx.globalAlpha = 0.35;
+    ctx.lineWidth = 0.3;
+    ctx.strokeStyle = '#c8c0b4';
+    ctx.globalAlpha = 0.15;
     ctx.beginPath();
     for (const l of raLines) {
       const active = activations && activations[l.aIdx] > 0 && retina[l.pixelIdx] > 0;
@@ -408,9 +408,9 @@ function ConnectionCanvas({
     ctx.stroke();
 
     // Draw active retina→assoc lines
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.8;
     ctx.strokeStyle = DARK;
-    ctx.globalAlpha = 0.6;
+    ctx.globalAlpha = 0.7;
     ctx.beginPath();
     for (const l of raLines) {
       const active = activations && activations[l.aIdx] > 0 && retina[l.pixelIdx] > 0;
@@ -421,10 +421,10 @@ function ConnectionCanvas({
     }
     ctx.stroke();
 
-    // Draw inactive assoc→output lines (batch)
-    ctx.lineWidth = 0.4;
-    ctx.strokeStyle = INACTIVE_COLOR;
-    ctx.globalAlpha = 0.25;
+    // Draw inactive assoc→output lines (batch) — very faint
+    ctx.lineWidth = 0.3;
+    ctx.strokeStyle = '#c8c0b4';
+    ctx.globalAlpha = 0.12;
     ctx.beginPath();
     for (const l of aoLines) {
       const active = activations && activations[l.aIdx] > 0;
@@ -436,15 +436,15 @@ function ConnectionCanvas({
     }
     ctx.stroke();
 
-    // Draw active assoc→output lines individually (different colors/widths)
+    // Draw active assoc→output lines — bold and saturated
     for (const l of aoLines) {
       const active = activations && activations[l.aIdx] > 0;
       if (!active) continue;
       const w = weights ? weights[l.oIdx][l.aIdx] : 0;
       const absW = Math.abs(w);
-      ctx.strokeStyle = w > 0 ? '#22c55e' : w < 0 ? '#ef4444' : INACTIVE_COLOR;
-      ctx.lineWidth = Math.max(0.5, absW * 3);
-      ctx.globalAlpha = Math.min(0.8, 0.2 + absW * 2);
+      ctx.strokeStyle = w > 0 ? '#16a34a' : w < 0 ? '#dc2626' : '#c8c0b4';
+      ctx.lineWidth = Math.max(0.8, absW * 4);
+      ctx.globalAlpha = Math.min(0.9, 0.3 + absW * 3);
       ctx.beginPath();
       ctx.moveTo(l.x1, l.y1);
       ctx.lineTo(l.xMid, l.y1);
