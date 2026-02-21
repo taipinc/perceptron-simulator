@@ -6,10 +6,11 @@ import {
   createOutputWeights,
   createOutputBiases,
   computeOutputScores,
+  predict,
   learn,
 } from './perceptron';
 import RetinaInput from './components/RetinaInput';
-import AssociationLayer from './components/AssociationLayer';
+import NetworkViz from './components/NetworkViz';
 import OutputPanel from './components/OutputPanel';
 import WeightViz from './components/WeightViz';
 import ControlPanel from './components/ControlPanel';
@@ -47,6 +48,8 @@ function App() {
     [associationActivations, weights, biases]
   );
 
+  const prediction = useMemo(() => predict(scores), [scores]);
+
   // Handlers
   const handleLearn = useCallback(
     (correctLabel) => {
@@ -66,7 +69,7 @@ function App() {
 
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 flex items-baseline justify-between">
           <div>
@@ -79,28 +82,30 @@ function App() {
           </div>
         </div>
 
-        {/* Main layout */}
-        <div className="grid grid-cols-[1fr_auto] gap-6">
-          {/* Left column: Retina + Association + Output */}
-          <div className="flex flex-col gap-6">
-            <div className="bg-white rounded-xl p-5 shadow-sm">
-              <RetinaInput retina={retina} onRetinaChange={setRetina} />
-            </div>
+        {/* Network visualization */}
+        <div className="bg-white rounded-xl p-5 shadow-sm mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            Network Architecture
+          </h2>
+          <NetworkViz
+            retina={retina}
+            associationUnits={associationUnits}
+            activations={associationActivations}
+            weights={weights}
+            scores={scores}
+            labels={labels}
+            prediction={prediction}
+          />
+        </div>
 
-            <div className="bg-white rounded-xl p-5 shadow-sm">
-              <AssociationLayer activations={associationActivations} />
-            </div>
-
-            <div className="bg-white rounded-xl p-5 shadow-sm">
-              <OutputPanel
-                scores={scores}
-                labels={labels}
-                onLabelsChange={setLabels}
-              />
-            </div>
+        {/* Main layout: Input | Controls + Weights | Output */}
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-6">
+          {/* Left: Retina input */}
+          <div className="bg-white rounded-xl p-5 shadow-sm">
+            <RetinaInput retina={retina} onRetinaChange={setRetina} />
           </div>
 
-          {/* Right column: Controls + Weights */}
+          {/* Center: Controls + Weights */}
           <div className="flex flex-col gap-6 w-72">
             <div className="bg-white rounded-xl p-5 shadow-sm">
               <ControlPanel
@@ -116,6 +121,15 @@ function App() {
             <div className="bg-white rounded-xl p-5 shadow-sm">
               <WeightViz weights={weights} labels={labels} />
             </div>
+          </div>
+
+          {/* Right: Output */}
+          <div className="bg-white rounded-xl p-5 shadow-sm">
+            <OutputPanel
+              scores={scores}
+              labels={labels}
+              onLabelsChange={setLabels}
+            />
           </div>
         </div>
       </div>
