@@ -48,6 +48,7 @@ function FieldGrid({ field, label }) {
           gap: GAP,
           borderRadius: 14,
           border: '3px solid #1a1a1a',
+          overflow: 'hidden',
         }}
       >
         {Array.from({ length: NUM_PIXELS }, (_, i) => (

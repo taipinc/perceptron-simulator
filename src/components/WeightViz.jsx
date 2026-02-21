@@ -31,6 +31,7 @@ function WeightGrid({ weights, label }) {
           width: 'fit-content',
           borderRadius: 10,
           border: '2px solid #1a1a1a',
+          overflow: 'hidden',
         }}
       >
         {Array.from({ length: NUM_ASSOCIATION }, (_, i) => (

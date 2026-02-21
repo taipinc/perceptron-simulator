@@ -2,22 +2,22 @@ import { useMemo, useRef, useEffect, useState } from 'react';
 import { RETINA_SIZE, NUM_ASSOCIATION } from '../perceptron';
 
 // Layout constants
-const LAYER_GAP = 120;
+const LAYER_GAP = 80;
 const RETINA_VIZ_SIZE = 200;
-const ASSOC_VIZ_W = 120;
+const ASSOC_VIZ_W = 180;
 const ASSOC_VIZ_H = 320;
-const WEIGHT_VIZ_W = 80;
+const WEIGHT_VIZ_W = 140;
 const WEIGHT_VIZ_H = 320;
 const OUTPUT_VIZ_H = 200;
 const OUTPUT_VIZ_W = 90;
 const TOP_PAD = 60;
 const BORDER = 3;
 
-const MAX_RETINA_ASSOC_LINES = 80;
-const MAX_ASSOC_OUTPUT_LINES = 40;
+const MAX_RETINA_ASSOC_LINES = NUM_ASSOCIATION;
+const MAX_ASSOC_OUTPUT_LINES = NUM_ASSOCIATION;
 
-const INACTIVE_COLOR = '#b8b0a0';
-const INACTIVE_DOT = '#c8c0b4';
+const INACTIVE_COLOR = '#8a8078';
+const INACTIVE_DOT = '#b0a898';
 const DARK = '#1a1a1a';
 
 // Layer panel colors
@@ -41,8 +41,15 @@ function weightToSvgColor(w) {
 
 function RetinaLayer({ retina, x, y }) {
   const cellSize = RETINA_VIZ_SIZE / RETINA_SIZE;
+  const clipId = 'retina-clip';
+  const inset = BORDER / 2;
   return (
     <g transform={`translate(${x}, ${y})`}>
+      <defs>
+        <clipPath id={clipId}>
+          <rect x={inset} y={inset} width={RETINA_VIZ_SIZE - BORDER} height={RETINA_VIZ_SIZE - BORDER} rx={16} />
+        </clipPath>
+      </defs>
       <rect
         width={RETINA_VIZ_SIZE}
         height={RETINA_VIZ_SIZE}
@@ -51,21 +58,23 @@ function RetinaLayer({ retina, x, y }) {
         stroke={DARK}
         strokeWidth={BORDER}
       />
-      {retina.map((val, i) => {
-        const row = Math.floor(i / RETINA_SIZE);
-        const col = i % RETINA_SIZE;
-        return (
-          <rect
-            key={i}
-            x={col * cellSize + 0.5}
-            y={row * cellSize + 0.5}
-            width={cellSize - 1}
-            height={cellSize - 1}
-            fill={val ? DARK : '#e8e3db'}
-            rx={1}
-          />
-        );
-      })}
+      <g clipPath={`url(#${clipId})`}>
+        {retina.map((val, i) => {
+          const row = Math.floor(i / RETINA_SIZE);
+          const col = i % RETINA_SIZE;
+          return (
+            <rect
+              key={i}
+              x={col * cellSize + 0.5}
+              y={row * cellSize + 0.5}
+              width={cellSize - 1}
+              height={cellSize - 1}
+              fill={val ? DARK : '#e8e3db'}
+              rx={1}
+            />
+          );
+        })}
+      </g>
       <text
         x={RETINA_VIZ_SIZE / 2}
         y={-14}
@@ -94,14 +103,6 @@ function AssociationLayerViz({ activations, x, y }) {
 
   return (
     <g transform={`translate(${x}, ${y})`}>
-      <rect
-        width={ASSOC_VIZ_W}
-        height={ASSOC_VIZ_H}
-        rx={18}
-        fill={ASSOC_BG}
-        stroke={DARK}
-        strokeWidth={BORDER}
-      />
       {Array.from({ length: NUM_ASSOCIATION }, (_, i) => {
         const row = Math.floor(i / cols);
         const col = i % cols;
@@ -111,7 +112,7 @@ function AssociationLayerViz({ activations, x, y }) {
             key={i}
             cx={padX + col * dotSize + dotSize / 2}
             cy={padY + row * dotSize + dotSize / 2}
-            r={dotSize * 0.3}
+            r={dotSize * 0.35}
             fill={active ? '#3b82f6' : INACTIVE_DOT}
             stroke={active ? DARK : 'none'}
             strokeWidth={active ? 0.5 : 0}
@@ -157,14 +158,6 @@ function WeightLayerViz({ weights, labels, x, y }) {
 
   return (
     <g transform={`translate(${x}, ${y})`}>
-      <rect
-        width={WEIGHT_VIZ_W}
-        height={WEIGHT_VIZ_H}
-        rx={18}
-        fill={WEIGHT_BG}
-        stroke={DARK}
-        strokeWidth={BORDER}
-      />
       {[0, 1].map((oIdx) => {
         const gy = startY + oIdx * (gridH + 24);
         const padX = (WEIGHT_VIZ_W - cols * cellSize) / 2;
@@ -298,7 +291,36 @@ function OutputLayerViz({ scores, labels, prediction, x, y }) {
   );
 }
 
-function Connections({
+// Pre-compute stable sampled indices once (not on every render)
+const STABLE_RETINA_ASSOC_INDICES = (() => {
+  const indices = [];
+  // Use a simple deterministic spread: pick evenly spaced indices
+  const step = NUM_ASSOCIATION / MAX_RETINA_ASSOC_LINES;
+  for (let i = 0; i < MAX_RETINA_ASSOC_LINES; i++) {
+    indices.push(Math.floor(i * step));
+  }
+  return indices;
+})();
+
+const STABLE_ASSOC_OUTPUT_INDICES = (() => {
+  const indices = [];
+  const step = NUM_ASSOCIATION / MAX_ASSOC_OUTPUT_LINES;
+  for (let i = 0; i < MAX_ASSOC_OUTPUT_LINES; i++) {
+    indices.push(Math.floor(i * step));
+  }
+  return indices;
+})();
+
+function getAssocDotLayout() {
+  const cols = 8;
+  const rows = Math.ceil(NUM_ASSOCIATION / cols);
+  const dotSize = Math.min((ASSOC_VIZ_W - 16) / cols, (ASSOC_VIZ_H - 16) / rows);
+  const padX = (ASSOC_VIZ_W - cols * dotSize) / 2;
+  const padY = (ASSOC_VIZ_H - rows * dotSize) / 2;
+  return { cols, dotSize, padX, padY };
+}
+
+function ConnectionCanvas({
   retina,
   associationUnits,
   activations,
@@ -307,110 +329,137 @@ function Connections({
   assocPos,
   weightPos,
   outputPos,
+  width,
+  height,
 }) {
-  const retinaToAssoc = useMemo(() => {
-    const lines = [];
-    const activeIndices = [];
-    const inactiveIndices = [];
-    for (let i = 0; i < NUM_ASSOCIATION; i++) {
-      if (activations && activations[i] > 0) activeIndices.push(i);
-      else inactiveIndices.push(i);
-    }
-    const sampled = [];
-    const shuffledActive = activeIndices.sort(() => Math.random() - 0.5);
-    sampled.push(...shuffledActive.slice(0, Math.min(MAX_RETINA_ASSOC_LINES * 0.7, shuffledActive.length)));
-    const shuffledInactive = inactiveIndices.sort(() => Math.random() - 0.5);
-    sampled.push(...shuffledInactive.slice(0, MAX_RETINA_ASSOC_LINES - sampled.length));
+  const canvasRef = useRef(null);
 
-    const cols = 8;
-    const dotSize = Math.min((ASSOC_VIZ_W - 16) / cols, (ASSOC_VIZ_H - 16) / Math.ceil(NUM_ASSOCIATION / cols));
-    const padY = (ASSOC_VIZ_H - Math.ceil(NUM_ASSOCIATION / cols) * dotSize) / 2;
+  // Pre-compute static line geometry once
+  const geometry = useMemo(() => {
+    const { cols, dotSize, padX, padY } = getAssocDotLayout();
     const cellSize = RETINA_VIZ_SIZE / RETINA_SIZE;
-
-    for (const aIdx of sampled) {
-      const unit = associationUnits[aIdx];
-      const pixelIdx = unit.connections[Math.floor(Math.random() * unit.connections.length)];
-      const pixelRow = Math.floor(pixelIdx / RETINA_SIZE);
-      const aRow = Math.floor(aIdx / cols);
-
-      lines.push({
-        x1: retinaPos.x + RETINA_VIZ_SIZE,
-        y1: retinaPos.y + pixelRow * cellSize + cellSize / 2,
-        x2: assocPos.x,
-        y2: assocPos.y + padY + aRow * dotSize + dotSize / 2,
-        active: activations && activations[aIdx] > 0 && retina[pixelIdx] > 0,
-        key: `ra-${aIdx}`,
-      });
-    }
-    return lines;
-  }, [retina, associationUnits, activations, retinaPos, assocPos]);
-
-  const assocToOutput = useMemo(() => {
-    const lines = [];
-    const cols = 8;
-    const dotSize = Math.min((ASSOC_VIZ_W - 16) / cols, (ASSOC_VIZ_H - 16) / Math.ceil(NUM_ASSOCIATION / cols));
-    const padY = (ASSOC_VIZ_H - Math.ceil(NUM_ASSOCIATION / cols) * dotSize) / 2;
     const unitH = 70, gap = 20;
     const totalH = unitH * 2 + gap;
     const startY = (OUTPUT_VIZ_H - totalH) / 2;
 
-    const indices = Array.from({ length: NUM_ASSOCIATION }, (_, i) => i)
-      .sort(() => Math.random() - 0.5).slice(0, MAX_ASSOC_OUTPUT_LINES);
-
-    for (const aIdx of indices) {
+    const raLines = STABLE_RETINA_ASSOC_INDICES.map((aIdx) => {
+      const unit = associationUnits[aIdx];
+      const pixelIdx = unit.connections[0];
+      const pixelRow = Math.floor(pixelIdx / RETINA_SIZE);
       const aRow = Math.floor(aIdx / cols);
-      const x1 = assocPos.x + ASSOC_VIZ_W;
+      const aCol = aIdx % cols;
+      return {
+        x1: retinaPos.x + RETINA_VIZ_SIZE,
+        y1: retinaPos.y + pixelRow * cellSize + cellSize / 2,
+        x2: assocPos.x + padX + aCol * dotSize + dotSize / 2,
+        y2: assocPos.y + padY + aRow * dotSize + dotSize / 2,
+        aIdx,
+        pixelIdx,
+      };
+    });
+
+    const aoLines = [];
+    for (const aIdx of STABLE_ASSOC_OUTPUT_INDICES) {
+      const aRow = Math.floor(aIdx / cols);
+      const aCol = aIdx % cols;
+      const x1 = assocPos.x + padX + aCol * dotSize + dotSize / 2;
       const y1 = assocPos.y + padY + aRow * dotSize + dotSize / 2;
       const xMid = weightPos.x + WEIGHT_VIZ_W / 2;
-
       for (let oIdx = 0; oIdx < 2; oIdx++) {
-        lines.push({
+        aoLines.push({
           x1, y1,
           x2: outputPos.x,
           y2: outputPos.y + startY + oIdx * (unitH + gap) + unitH / 2,
-          xMid, yMid: y1,
-          active: activations && activations[aIdx] > 0,
-          weight: weights ? weights[oIdx][aIdx] : 0,
-          key: `ao-${aIdx}-${oIdx}`,
+          xMid,
+          aIdx,
+          oIdx,
         });
       }
     }
-    return lines;
-  }, [activations, weights, assocPos, weightPos, outputPos]);
+
+    return { raLines, aoLines };
+  }, [associationUnits, retinaPos, assocPos, weightPos, outputPos]);
+
+  // Draw on canvas whenever dynamic data changes
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, width, height);
+
+    const { raLines, aoLines } = geometry;
+
+    // Draw inactive retina→assoc lines first (batch)
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = INACTIVE_COLOR;
+    ctx.globalAlpha = 0.35;
+    ctx.beginPath();
+    for (const l of raLines) {
+      const active = activations && activations[l.aIdx] > 0 && retina[l.pixelIdx] > 0;
+      if (!active) {
+        ctx.moveTo(l.x1, l.y1);
+        ctx.lineTo(l.x2, l.y2);
+      }
+    }
+    ctx.stroke();
+
+    // Draw active retina→assoc lines
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = DARK;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    for (const l of raLines) {
+      const active = activations && activations[l.aIdx] > 0 && retina[l.pixelIdx] > 0;
+      if (active) {
+        ctx.moveTo(l.x1, l.y1);
+        ctx.lineTo(l.x2, l.y2);
+      }
+    }
+    ctx.stroke();
+
+    // Draw inactive assoc→output lines (batch)
+    ctx.lineWidth = 0.4;
+    ctx.strokeStyle = INACTIVE_COLOR;
+    ctx.globalAlpha = 0.25;
+    ctx.beginPath();
+    for (const l of aoLines) {
+      const active = activations && activations[l.aIdx] > 0;
+      if (!active) {
+        ctx.moveTo(l.x1, l.y1);
+        ctx.lineTo(l.xMid, l.y1);
+        ctx.lineTo(l.x2, l.y2);
+      }
+    }
+    ctx.stroke();
+
+    // Draw active assoc→output lines individually (different colors/widths)
+    for (const l of aoLines) {
+      const active = activations && activations[l.aIdx] > 0;
+      if (!active) continue;
+      const w = weights ? weights[l.oIdx][l.aIdx] : 0;
+      const absW = Math.abs(w);
+      ctx.strokeStyle = w > 0 ? '#22c55e' : w < 0 ? '#ef4444' : INACTIVE_COLOR;
+      ctx.lineWidth = Math.max(0.5, absW * 3);
+      ctx.globalAlpha = Math.min(0.8, 0.2 + absW * 2);
+      ctx.beginPath();
+      ctx.moveTo(l.x1, l.y1);
+      ctx.lineTo(l.xMid, l.y1);
+      ctx.lineTo(l.x2, l.y2);
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+  }, [geometry, retina, activations, weights, width, height]);
 
   return (
-    <g>
-      {retinaToAssoc.map((line) => (
-        <line
-          key={line.key}
-          x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
-          stroke={line.active ? DARK : INACTIVE_COLOR}
-          strokeWidth={line.active ? 1.5 : 0.4}
-          opacity={line.active ? 0.5 : 0.2}
-        />
-      ))}
-      {assocToOutput.map((line) => {
-        const absW = Math.abs(line.weight);
-        const color = line.weight > 0 ? '#22c55e' : line.weight < 0 ? '#ef4444' : INACTIVE_COLOR;
-        const isActive = line.active;
-        return (
-          <g key={line.key}>
-            <line
-              x1={line.x1} y1={line.y1} x2={line.xMid} y2={line.yMid}
-              stroke={isActive ? color : INACTIVE_COLOR}
-              strokeWidth={isActive ? Math.max(0.5, absW * 3) : 0.3}
-              opacity={isActive ? Math.min(0.8, 0.2 + absW * 2) : 0.12}
-            />
-            <line
-              x1={line.xMid} y1={line.yMid} x2={line.x2} y2={line.y2}
-              stroke={isActive ? color : INACTIVE_COLOR}
-              strokeWidth={isActive ? Math.max(0.5, absW * 3) : 0.3}
-              opacity={isActive ? Math.min(0.8, 0.2 + absW * 2) : 0.12}
-            />
-          </g>
-        );
-      })}
-    </g>
+    <canvas
+      ref={canvasRef}
+      style={{ position: 'absolute', top: 0, left: 0, width, height, pointerEvents: 'none' }}
+    />
   );
 }
 
@@ -439,12 +488,13 @@ export default function NetworkViz({ retina, associationUnits, activations, weig
   const svgH = TOP_PAD + ASSOC_VIZ_H + 44;
 
   return (
-    <div ref={containerRef} className="w-full">
-      <svg width="100%" height={svgH} viewBox={`0 0 ${containerWidth} ${svgH}`} className="overflow-visible">
-        <Connections
-          retina={retina} associationUnits={associationUnits} activations={activations} weights={weights}
-          retinaPos={positions.retina} assocPos={positions.assoc} weightPos={positions.weight} outputPos={positions.output}
-        />
+    <div ref={containerRef} className="w-full" style={{ position: 'relative' }}>
+      <ConnectionCanvas
+        retina={retina} associationUnits={associationUnits} activations={activations} weights={weights}
+        retinaPos={positions.retina} assocPos={positions.assoc} weightPos={positions.weight} outputPos={positions.output}
+        width={containerWidth} height={svgH}
+      />
+      <svg width="100%" height={svgH} viewBox={`0 0 ${containerWidth} ${svgH}`} style={{ position: 'relative' }}>
         <RetinaLayer retina={retina} x={positions.retina.x} y={positions.retina.y} />
         <AssociationLayerViz activations={activations} x={positions.assoc.x} y={positions.assoc.y} />
         <WeightLayerViz weights={weights} labels={labels} x={positions.weight.x} y={positions.weight.y} />
