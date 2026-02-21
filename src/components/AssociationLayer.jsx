@@ -35,7 +35,7 @@ export default function AssociationLayer({ activations }) {
             style={{
               width: CELL,
               height: CELL,
-              backgroundColor: activations && activations[i] > 0 ? '#3b82f6' : '#f3f4f6',
+              backgroundColor: activations && activations[i] > 0 ? '#3b82f6' : '#c8c8c8',
               borderRadius: 1,
             }}
           />

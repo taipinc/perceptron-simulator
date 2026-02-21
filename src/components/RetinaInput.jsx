@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import DrawableGrid from './DrawableGrid';
-import WebcamInput from './WebcamInput';
-import PredefinedImages from './PredefinedImages';
 import { NUM_PIXELS } from '../perceptron';
-
-const TABS = ['Draw', 'Shapes', 'Webcam'];
 
 function BrushControls({ tool, onToolChange, brushSize, onBrushSizeChange }) {
   return (
@@ -54,13 +50,10 @@ function BrushControls({ tool, onToolChange, brushSize, onBrushSizeChange }) {
 }
 
 export default function RetinaInput({ retina, onRetinaChange }) {
-  const [activeTab, setActiveTab] = useState(0);
   const [tool, setTool] = useState('brush');
   const [brushSize, setBrushSize] = useState(1);
 
   const clearRetina = () => onRetinaChange(new Array(NUM_PIXELS).fill(0));
-
-  const gridProps = { retina, onRetinaChange, tool, brushSize };
 
   return (
     <div className="flex flex-col gap-3">
@@ -74,49 +67,14 @@ export default function RetinaInput({ retina, onRetinaChange }) {
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 bg-gray-200 rounded p-0.5">
-        {TABS.map((tab, i) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(i)}
-            className={`flex-1 text-sm py-1.5 rounded transition-colors cursor-pointer ${
-              activeTab === i
-                ? 'bg-white text-gray-900 shadow-sm font-medium'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <BrushControls
+        tool={tool}
+        onToolChange={setTool}
+        brushSize={brushSize}
+        onBrushSizeChange={setBrushSize}
+      />
 
-      {/* Brush controls — visible in Draw and Shapes tabs */}
-      {activeTab !== 2 && (
-        <BrushControls
-          tool={tool}
-          onToolChange={setTool}
-          brushSize={brushSize}
-          onBrushSizeChange={setBrushSize}
-        />
-      )}
-
-      {/* Tab content */}
-      <div>
-        {activeTab === 0 && <DrawableGrid {...gridProps} />}
-        {activeTab === 1 && (
-          <div className="flex flex-col gap-3">
-            <PredefinedImages onSelect={onRetinaChange} />
-            <DrawableGrid {...gridProps} />
-          </div>
-        )}
-        {activeTab === 2 && (
-          <div className="flex flex-col gap-3">
-            <WebcamInput onRetinaChange={onRetinaChange} />
-            <DrawableGrid {...gridProps} />
-          </div>
-        )}
-      </div>
+      <DrawableGrid retina={retina} onRetinaChange={onRetinaChange} tool={tool} brushSize={brushSize} />
     </div>
   );
 }

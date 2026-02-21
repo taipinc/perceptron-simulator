@@ -14,7 +14,7 @@ function weightToColor(w) {
     const r = Math.round(100 + 155 * intensity);
     return `rgb(${r}, 60, 60)`;
   }
-  return '#e5e7eb';
+  return '#b0b0b0';
 }
 
 function WeightGrid({ weights, label }) {
@@ -38,7 +38,7 @@ function WeightGrid({ weights, label }) {
             style={{
               width: CELL,
               height: CELL,
-              backgroundColor: weights ? weightToColor(weights[i]) : '#e5e7eb',
+              backgroundColor: weights ? weightToColor(weights[i]) : '#b0b0b0',
               borderRadius: 1,
             }}
           />

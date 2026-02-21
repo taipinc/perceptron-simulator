@@ -15,8 +15,8 @@ export function createAssociationLayer() {
       connections.add(Math.floor(Math.random() * NUM_PIXELS));
     }
     const connectionArray = Array.from(connections);
-    // Threshold: fire if ~20% of connected pixels are active
-    const threshold = Math.max(1, Math.ceil(numConnections * 0.2));
+    // Threshold: fire if ~30% of connected pixels are active
+    const threshold = Math.max(1, Math.ceil(numConnections * 0.3));
     units.push({ connections: connectionArray, threshold });
   }
   return units;
