@@ -90,4 +90,22 @@ export function learn(weights, biases, associationActivations, correctLabel, lea
   return { weights: newWeights, biases: newBiases };
 }
 
+// Project output weights back through association connections onto the retina.
+// For each output unit, compute a 20x20 heatmap: each pixel accumulates the
+// weight of every association unit that connects to it.
+export function computeReceptiveFields(weights, associationUnits) {
+  const fields = [];
+  for (let o = 0; o < NUM_OUTPUTS; o++) {
+    const field = new Float32Array(NUM_PIXELS);
+    for (let a = 0; a < NUM_ASSOCIATION; a++) {
+      const w = weights[o][a];
+      for (const pixelIdx of associationUnits[a].connections) {
+        field[pixelIdx] += w;
+      }
+    }
+    fields.push(field);
+  }
+  return fields;
+}
+
 export { RETINA_SIZE, NUM_PIXELS, NUM_ASSOCIATION, NUM_OUTPUTS };

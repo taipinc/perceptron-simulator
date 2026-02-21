@@ -8,12 +8,14 @@ import {
   computeOutputScores,
   predict,
   learn,
+  computeReceptiveFields,
 } from './perceptron';
 import RetinaInput from './components/RetinaInput';
 import NetworkViz from './components/NetworkViz';
 import OutputPanel from './components/OutputPanel';
 import WeightViz from './components/WeightViz';
 import ControlPanel from './components/ControlPanel';
+import ReceptiveFieldViz from './components/ReceptiveFieldViz';
 
 function App() {
   // Association layer: fixed random connections, created once
@@ -49,6 +51,11 @@ function App() {
   );
 
   const prediction = useMemo(() => predict(scores), [scores]);
+
+  const receptiveFields = useMemo(
+    () => computeReceptiveFields(weights, associationUnits),
+    [weights, associationUnits]
+  );
 
   // Handlers
   const handleLearn = useCallback(
@@ -131,6 +138,11 @@ function App() {
               onLabelsChange={setLabels}
             />
           </div>
+        </div>
+
+        {/* Receptive fields */}
+        <div className="bg-white rounded-xl p-5 shadow-sm mt-6">
+          <ReceptiveFieldViz receptiveFields={receptiveFields} labels={labels} />
         </div>
       </div>
     </div>
