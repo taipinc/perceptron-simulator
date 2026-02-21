@@ -7,16 +7,15 @@ export default function ControlPanel({
   hasInput,
 }) {
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-        Controls
-      </h2>
+    <div className="flex flex-col gap-5">
+      <div className="card-label" style={{ marginBottom: 0 }}>Controls</div>
 
       {/* Learning rate */}
-      <label className="flex flex-col gap-1">
-        <span className="text-sm text-gray-600">
-          Learning rate: <span className="font-mono font-medium">{learningRate.toFixed(2)}</span>
-        </span>
+      <label className="flex flex-col gap-2">
+        <div className="flex items-baseline justify-between">
+          <span className="text-sm font-semibold">Learning rate</span>
+          <span className="mono text-sm font-bold">{learningRate.toFixed(2)}</span>
+        </div>
         <input
           type="range"
           min={0.01}
@@ -24,38 +23,39 @@ export default function ControlPanel({
           step={0.01}
           value={learningRate}
           onChange={(e) => onLearningRateChange(Number(e.target.value))}
-          className="w-full"
+          className="w-full accent-[#1a1a1a]"
         />
       </label>
 
       {/* Learn buttons */}
       <div className="flex flex-col gap-2">
-        <span className="text-sm text-gray-600">Teach correct class:</span>
+        <span className="text-sm font-semibold">Teach correct class:</span>
         <div className="flex gap-2">
           {labels.map((label, idx) => (
             <button
               key={idx}
               onClick={() => onLearn(idx)}
               disabled={!hasInput}
-              className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors cursor-pointer ${
+              className={`flex-1 py-3 px-3 rounded-full text-sm font-bold transition-all cursor-pointer border-3 ${
                 hasInput
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  ? 'border-[#1a1a1a] bg-[#1a1a1a] text-white hover:bg-[#333] active:scale-95'
+                  : 'border-[#c0b8a8] bg-transparent text-[#c0b8a8] cursor-not-allowed'
               }`}
+              style={{ borderWidth: 3 }}
             >
               {label}
             </button>
           ))}
         </div>
         {!hasInput && (
-          <span className="text-xs text-gray-400">Draw or load an input first</span>
+          <span className="mono text-[10px]" style={{ opacity: 0.4 }}>Draw an input first</span>
         )}
       </div>
 
       {/* Reset */}
       <button
         onClick={onReset}
-        className="py-2 px-3 rounded text-sm bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors cursor-pointer"
+        className="py-2.5 px-4 rounded-full text-sm font-bold border-2 border-[#1a1a1a] bg-transparent hover:bg-[#1a1a1a] hover:text-white transition-all cursor-pointer active:scale-95"
       >
         Reset Weights
       </button>

@@ -58,16 +58,18 @@ export default function DrawableGrid({ retina, onRetinaChange, tool, brushSize }
 
   return (
     <div
-      className="inline-block select-none rounded"
+      className="inline-block select-none"
       style={{
         width: GRID_PX,
         height: GRID_PX,
-        backgroundColor: '#d1d5db',
+        backgroundColor: '#1a1a1a',
         padding: GAP,
         display: 'grid',
         gridTemplateColumns: `repeat(${RETINA_SIZE}, ${CELL_SIZE}px)`,
         gap: GAP,
         cursor: tool === 'eraser' ? 'cell' : 'crosshair',
+        borderRadius: 16,
+        border: '3px solid #1a1a1a',
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -80,7 +82,7 @@ export default function DrawableGrid({ retina, onRetinaChange, tool, brushSize }
           style={{
             width: CELL_SIZE,
             height: CELL_SIZE,
-            backgroundColor: val ? '#1a1a1a' : '#ffffff',
+            backgroundColor: val ? '#1a1a1a' : '#e8e3db',
             borderRadius: 2,
           }}
         />

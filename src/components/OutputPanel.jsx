@@ -10,39 +10,40 @@ export default function OutputPanel({ scores, labels, onLabelsChange }) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-        Output Layer
-      </h2>
-      <div className="flex gap-3">
+    <div className="flex flex-col gap-4">
+      <div className="card-label" style={{ marginBottom: 0 }}>Output Layer</div>
+      <div className="flex flex-col gap-3">
         {[0, 1].map((idx) => {
           const isWinner = prediction === idx;
           return (
             <div
               key={idx}
-              className={`flex-1 rounded-lg p-3 border-2 transition-colors ${
-                isWinner
-                  ? 'border-blue-400 bg-blue-50'
-                  : 'border-gray-200 bg-white'
-              }`}
+              className="rounded-2xl p-4 border-3 transition-all"
+              style={{
+                border: `3px solid #1a1a1a`,
+                backgroundColor: isWinner ? '#1a1a1a' : 'rgba(255,255,255,0.5)',
+                color: isWinner ? '#fff' : '#1a1a1a',
+              }}
             >
               <input
                 type="text"
                 value={labels[idx]}
                 onChange={(e) => handleLabelChange(idx, e.target.value)}
-                className="w-full text-sm font-medium bg-transparent border-none outline-none text-center"
+                className="w-full text-sm font-bold bg-transparent border-none outline-none"
+                style={{ color: 'inherit' }}
                 spellCheck={false}
               />
-              <div className="text-center mt-1">
-                <span className="text-2xl font-mono font-bold">
+              <div className="flex items-baseline justify-between mt-1">
+                <span className="mono text-2xl font-bold">
                   {scores ? scores[idx].toFixed(3) : '—'}
                 </span>
+                {isWinner && (
+                  <span className="mono text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full"
+                    style={{ backgroundColor: '#ef4444', color: '#fff' }}>
+                    Predicted
+                  </span>
+                )}
               </div>
-              {isWinner && (
-                <div className="text-center text-xs font-semibold text-blue-500 mt-1">
-                  PREDICTED
-                </div>
-              )}
             </div>
           );
         })}

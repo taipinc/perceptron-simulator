@@ -5,46 +5,44 @@ import { NUM_PIXELS } from '../perceptron';
 function BrushControls({ tool, onToolChange, brushSize, onBrushSizeChange }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex gap-1 bg-gray-200 rounded p-0.5">
+      <div className="flex gap-1 rounded-full border-2 border-[#1a1a1a] overflow-hidden">
         <button
           onClick={() => onToolChange('brush')}
-          className={`text-xs px-2.5 py-1 rounded transition-colors cursor-pointer ${
+          className={`text-xs font-semibold px-4 py-1.5 transition-colors cursor-pointer ${
             tool === 'brush'
-              ? 'bg-white text-gray-900 shadow-sm font-medium'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-[#1a1a1a] text-white'
+              : 'bg-transparent text-[#1a1a1a] hover:bg-[#1a1a1a1a]'
           }`}
         >
           Brush
         </button>
         <button
           onClick={() => onToolChange('eraser')}
-          className={`text-xs px-2.5 py-1 rounded transition-colors cursor-pointer ${
+          className={`text-xs font-semibold px-4 py-1.5 transition-colors cursor-pointer ${
             tool === 'eraser'
-              ? 'bg-white text-gray-900 shadow-sm font-medium'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-[#1a1a1a] text-white'
+              : 'bg-transparent text-[#1a1a1a] hover:bg-[#1a1a1a1a]'
           }`}
         >
           Eraser
         </button>
       </div>
-      <label className="flex items-center gap-1.5 text-xs text-gray-500">
-        Size
-        <div className="flex gap-0.5">
-          {[1, 2, 3, 4].map((s) => (
-            <button
-              key={s}
-              onClick={() => onBrushSizeChange(s)}
-              className={`w-6 h-6 rounded text-xs flex items-center justify-center cursor-pointer transition-colors ${
-                brushSize === s
-                  ? 'bg-gray-700 text-white'
-                  : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      </label>
+      <div className="flex items-center gap-1">
+        <span className="mono text-[10px] uppercase tracking-wider mr-1" style={{ opacity: 0.5 }}>Size</span>
+        {[1, 2, 3, 4].map((s) => (
+          <button
+            key={s}
+            onClick={() => onBrushSizeChange(s)}
+            className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer transition-colors border-2 border-[#1a1a1a] ${
+              brushSize === s
+                ? 'bg-[#1a1a1a] text-white'
+                : 'bg-transparent text-[#1a1a1a]'
+            }`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -56,12 +54,12 @@ export default function RetinaInput({ retina, onRetinaChange }) {
   const clearRetina = () => onRetinaChange(new Array(NUM_PIXELS).fill(0));
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Retina Input (20x20)</h2>
+        <div className="card-label" style={{ marginBottom: 0 }}>Retina Input (20x20)</div>
         <button
           onClick={clearRetina}
-          className="text-xs px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-600 transition-colors cursor-pointer"
+          className="mono text-[10px] uppercase tracking-wider px-4 py-1.5 rounded-full border-2 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white transition-colors cursor-pointer font-bold"
         >
           Clear
         </button>

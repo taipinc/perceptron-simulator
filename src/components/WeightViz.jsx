@@ -14,22 +14,23 @@ function weightToColor(w) {
     const r = Math.round(100 + 155 * intensity);
     return `rgb(${r}, 60, 60)`;
   }
-  return '#b0b0b0';
+  return '#c8c0b4';
 }
 
 function WeightGrid({ weights, label }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-gray-500 font-medium">{label}</span>
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-bold">{label}</span>
       <div
-        className="rounded overflow-hidden"
         style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${VIZ_COLS}, ${CELL}px)`,
           gap: GAP,
           padding: GAP,
-          backgroundColor: '#d1d5db',
+          backgroundColor: '#1a1a1a',
           width: 'fit-content',
+          borderRadius: 10,
+          border: '2px solid #1a1a1a',
         }}
       >
         {Array.from({ length: NUM_ASSOCIATION }, (_, i) => (
@@ -38,7 +39,7 @@ function WeightGrid({ weights, label }) {
             style={{
               width: CELL,
               height: CELL,
-              backgroundColor: weights ? weightToColor(weights[i]) : '#b0b0b0',
+              backgroundColor: weights ? weightToColor(weights[i]) : '#c8c0b4',
               borderRadius: 1,
             }}
           />
@@ -51,17 +52,15 @@ function WeightGrid({ weights, label }) {
 export default function WeightViz({ weights, labels }) {
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-        Weights
-      </h2>
-      <div className="flex items-center gap-3 text-xs text-gray-400">
-        <span className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: 'rgb(60, 255, 60)' }} />
-          Positive
+      <div className="card-label" style={{ marginBottom: 0 }}>Weights</div>
+      <div className="flex items-center gap-4 mono text-[10px] uppercase tracking-wider" style={{ opacity: 0.5 }}>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded-full border-2 border-[#1a1a1a]" style={{ backgroundColor: 'rgb(60, 255, 60)' }} />
+          Pos
         </span>
-        <span className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: 'rgb(255, 60, 60)' }} />
-          Negative
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded-full border-2 border-[#1a1a1a]" style={{ backgroundColor: 'rgb(255, 60, 60)' }} />
+          Neg
         </span>
       </div>
       <div className="flex flex-col gap-3">

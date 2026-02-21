@@ -6,17 +6,15 @@ const GAP = 1;
 const GRID_PX = RETINA_SIZE * (CELL_SIZE + GAP) + GAP;
 
 function valueToColor(val, maxAbs) {
-  if (maxAbs === 0) return '#b0b0b0';
-  const normalized = val / maxAbs; // -1 to 1
+  if (maxAbs === 0) return '#c8c0b4';
+  const normalized = val / maxAbs;
   if (normalized > 0) {
-    // Green channel: stronger positive → brighter green
     const t = normalized;
     const r = Math.round(240 - 180 * t);
     const g = Math.round(240 - 40 * t);
     const b = Math.round(240 - 180 * t);
     return `rgb(${r}, ${g}, ${b})`;
   } else {
-    // Red channel: stronger negative → brighter red
     const t = -normalized;
     const r = Math.round(240 - 20 * t);
     const g = Math.round(240 - 180 * t);
@@ -37,18 +35,19 @@ function FieldGrid({ field, label }) {
   }, [field]);
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-xs text-gray-600 font-medium">{label}</span>
+    <div className="flex flex-col gap-2">
+      <span className="text-xs font-bold">{label}</span>
       <div
-        className="rounded overflow-hidden"
         style={{
           width: GRID_PX,
           height: GRID_PX,
-          backgroundColor: '#d1d5db',
+          backgroundColor: '#1a1a1a',
           padding: GAP,
           display: 'grid',
           gridTemplateColumns: `repeat(${RETINA_SIZE}, ${CELL_SIZE}px)`,
           gap: GAP,
+          borderRadius: 14,
+          border: '3px solid #1a1a1a',
         }}
       >
         {Array.from({ length: NUM_PIXELS }, (_, i) => (
@@ -57,7 +56,7 @@ function FieldGrid({ field, label }) {
             style={{
               width: CELL_SIZE,
               height: CELL_SIZE,
-              backgroundColor: field ? valueToColor(field[i], maxAbs) : '#e0e0e0',
+              backgroundColor: field ? valueToColor(field[i], maxAbs) : '#d8d0c4',
               borderRadius: 1,
             }}
           />
@@ -69,26 +68,24 @@ function FieldGrid({ field, label }) {
 
 export default function ReceptiveFieldViz({ receptiveFields, labels }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-          Receptive Fields
-        </h2>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <div className="card-label" style={{ marginBottom: 4 }}>Receptive Fields</div>
+        <p className="mono text-[10px]" style={{ opacity: 0.4 }}>
           Weights projected back onto the retina — shows what each output "looks for"
         </p>
       </div>
-      <div className="flex items-center gap-3 text-xs text-gray-400">
-        <span className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: 'rgb(60, 200, 60)' }} />
+      <div className="flex items-center gap-4 mono text-[10px] uppercase tracking-wider" style={{ opacity: 0.5 }}>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded-full border-2 border-[#1a1a1a]" style={{ backgroundColor: 'rgb(60, 200, 60)' }} />
           Excitatory
         </span>
-        <span className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: 'rgb(220, 60, 60)' }} />
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded-full border-2 border-[#1a1a1a]" style={{ backgroundColor: 'rgb(220, 60, 60)' }} />
           Inhibitory
         </span>
       </div>
-      <div className="flex gap-6 flex-wrap">
+      <div className="flex gap-8 flex-wrap">
         {[0, 1].map((idx) => (
           <FieldGrid
             key={idx}
